@@ -44,7 +44,7 @@ module Bundler
       #
       def self.load(path)
         id   = File.basename(path).chomp('.yml')
-        data = YAML.load_file(path)
+        data = YAML.unsafe_load(File.read(path))
 
         unless data.kind_of?(Hash)
           raise("advisory data in #{path.dump} was not a Hash")

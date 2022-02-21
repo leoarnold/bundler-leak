@@ -50,7 +50,7 @@ describe Bundler::Plumber::CLI do
 
     context "--quiet" do
       before do
-        allow(subject).to receive(:options).and_return(double("Options", quiet?: true))
+        subject.options = subject.options.dup.tap { |o| o[:quiet] = true }
       end
 
       context "when update succeeds" do

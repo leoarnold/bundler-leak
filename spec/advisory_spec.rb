@@ -4,8 +4,8 @@ require 'bundler/plumber/advisory'
 
 describe Bundler::Plumber::Advisory do
   let(:root) { Bundler::Plumber::Database::VENDORED_PATH }
-  let(:gem)  { 'therubyracer' }
-  let(:id)   { '336' }
+  let(:gem)  { 'grape' }
+  let(:id)   { '2084' }
   let(:path) { File.join(root,'gems',gem,"#{id}.yml") }
   let(:an_unaffected_version) do
     Bundler::Plumber::Advisory.load(path).unaffected_versions.map { |version_rule|
@@ -27,7 +27,7 @@ describe Bundler::Plumber::Advisory do
   subject { described_class.load(path) }
 
   describe "load" do
-    let(:data) { YAML.load_file(path) }
+    let(:data) { YAML.unsafe_load(File.read(path)) }
 
     describe '#id' do
       subject { super().id }
@@ -99,7 +99,7 @@ describe Bundler::Plumber::Advisory do
 
   describe "#patched?" do
     context "when passed a version that matches one patched version" do
-      let(:version) { Gem::Version.new('0.12.4') }
+      let(:version) { Gem::Version.new('1.4.0') }
 
       it "should return true", doku: true do
         expect(subject.patched?(version)).to be_truthy
@@ -107,7 +107,7 @@ describe Bundler::Plumber::Advisory do
     end
 
     context "when passed a version that matches no patched version" do
-      let(:version) { Gem::Version.new('2.9.0') }
+      let(:version) { Gem::Version.new('1.3.9') }
 
       it "should return false" do
         expect(subject.patched?(version)).to be_falsey
@@ -117,7 +117,7 @@ describe Bundler::Plumber::Advisory do
 
   describe "#leaky?" do
     context "when passed a version that matches one patched version" do
-      let(:version) { Gem::Version.new('0.12.4') }
+      let(:version) { Gem::Version.new('1.4.0') }
 
       it "should return false" do
         expect(subject.leaky?(version)).to be_falsey
@@ -125,7 +125,7 @@ describe Bundler::Plumber::Advisory do
     end
 
     context "when passed a version that matches no patched version" do
-      let(:version) { Gem::Version.new('2.9.0') }
+      let(:version) { Gem::Version.new('1.3.9') }
 
       it "should return true" do
         expect(subject.leaky?(version)).to be_truthy
@@ -143,7 +143,7 @@ describe Bundler::Plumber::Advisory do
         end
 
         context "when passed a version that matches no unaffected version" do
-          let(:version) { Gem::Version.new('1.2.3') }
+          let(:version) { Gem::Version.new('1.3.3') }
 
           it "should return true" do
             expect(subject.leaky?(version)).to be_truthy
